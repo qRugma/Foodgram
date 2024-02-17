@@ -20,7 +20,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'users',
+    'rest_framework.authtoken',
+    'djoser',
+    'core',
     'api',
 ]
 
@@ -66,7 +68,7 @@ DATABASES = {
 }
 
 
-# AUTH_USER_MODEL = 'users.MyUser'
+AUTH_USER_MODEL = 'core.MyUser'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -83,6 +85,32 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10,
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+}
+
+DJOSER = {
+    'LOGIN_FIELD': 'email',
+    'SERIALIZERS': {
+        'user': 'core.serializers.UserSerializer',
+        'user_list': 'core.serializers.UserSerializer',
+        'current_user': 'core.serializers.UserSerializer',
+    },
+    'PERMISSIONS': {
+        'user': [],
+        'user_list': [],
+        'current_user': 'rest_framework.permissions.IsAuthenticated',
+    },
+    'HIDE_USERS': False
+}
 
 LANGUAGE_CODE = 'en-us'
 

@@ -5,8 +5,8 @@ from rest_framework import permissions, viewsets
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import LimitOffsetPagination
 
-from .models import Tag, Ingredient
-from users.models import Follow
+from .models import Tag, Ingredient, Recipe
+from core.models import Follow
 from .serializers import (
     TagSerializer, IngredientSerializer, RecipeSerializer, FollowSerializer
 )
@@ -23,6 +23,11 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = IngredientSerializer
     pagination_class = LimitOffsetPagination
 
+
+class RecipeViewSet(viewsets.ModelViewSet):
+    queryset = Recipe.objects.all()
+    serializer_class = RecipeSerializer
+    pagination_class = LimitOffsetPagination
 
 class FollowViewSet(viewsets.ModelViewSet):
     def get_queryset(self):

@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
 from .models import Recipe, Tag, Ingredient, RecipeIngredient, RecipeTag
-from users.models import Follow
+from core.models import Follow
 
 User = get_user_model()
 
@@ -24,11 +24,20 @@ class RecipeSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True, slug_field='username'
     )
-    # is_in_shopping_cart = serializers.
-    # is_favorited
+    # is_in_shopping_cart = serializers.SerializerMethodField()
+    # is_favorited = serializers.SerializerMethodField()
     class Meta:
         fields = '__all__'
         model = Recipe
+    
+
+    # def get_is_favorited(self, obj):
+    #     user = self.context['request'].user
+    #     return 
+    
+    # def get_is_in_shopping_cart(self, obj):
+    #     user = self.context['request'].user
+    #     return 
 
 
 class FollowSerializer(serializers.ModelSerializer):
