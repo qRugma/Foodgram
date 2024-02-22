@@ -31,6 +31,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+
+
 class FollowViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Follow.objects.filter(user=self.request.user)

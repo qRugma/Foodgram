@@ -31,7 +31,7 @@ class Recipe(models.Model):
     text = models.TextField()
     ingredients = models.ManyToManyField(
         Ingredient, through='RecipeIngredient', verbose_name='Ингредиенты')
-    tag = models.ManyToManyField(Tag, through='RecipeTag', verbose_name='Тег')
+    tags = models.ManyToManyField(Tag, through='RecipeTag', verbose_name='Тег')
     cooking_time = models.PositiveSmallIntegerField('Время приготовления')
 
     def __str__(self):
