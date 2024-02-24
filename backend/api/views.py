@@ -9,8 +9,12 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .models import Tag, Ingredient, Recipe
 from core.models import Follow
 from .serializers import (
-    TagSerializer, IngredientSerializer, RecipePostSerializer, FollowSerializer
+    TagSerializer, IngredientSerializer, RecipeSerialzier, FollowSerializer
 )
+from .filters import RecipeFilter
+
+from django.db.models import Q
+
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -29,10 +33,13 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
-    serializer_class = RecipePostSerializer
+    serializer_class = RecipeSerialzier
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class  = RecipeFilter
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        serializer.save(author_write=self.request.user)
+
 
 
 
