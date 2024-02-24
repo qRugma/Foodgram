@@ -5,6 +5,21 @@ from django.core.files.base import ContentFile
 
 
 
+
+class IngredientListingField(serializers.RelatedField):
+ 
+    def to_representation(self, value):
+        pprint(dir(value))
+        return {
+            "id": value.id,
+            "name": value.name,
+            "measurement_unit": value.measurement_unit,
+            "amount": value.amount,
+        }
+
+
+
+
 class Base64ImageField(serializers.ImageField):
     def to_internal_value(self, data):
         if isinstance(data, str) and data.startswith('data:image'):

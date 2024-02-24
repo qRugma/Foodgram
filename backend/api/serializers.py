@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from .models import Recipe, Tag, Ingredient, RecipeIngredient, RecipeTag
 from core.models import Follow
-from .fields import Base64ImageField
+from .fields import Base64ImageField, IngredientListingField
 User = get_user_model()
 
 
@@ -18,10 +18,17 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class IngredientSerializer(serializers.ModelSerializer):
-    amount = serializers.IntegerField(default=None)
     class Meta:
         fields = '__all__'
         model = Ingredient
+
+
+class RecipeIngredientSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    amount = serializers.IntegerField()
+    class Meta:
+        fields = ('id', 'amount')
+
 
 
 class BaseRecipeSerialzier(serializers.ModelSerializer):
@@ -53,13 +60,12 @@ class RecipeGetSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
 
 
-class RecipePostSerializer(serializers.ModelSerializer):
-    # ingredients = serializers.PrimaryKeyRelatedField(many=True)
-    # tags = serializers. PrimaryKeyRelatedField(many=True)
+class RecipePostSerializer(BaseRecipeSerialzier):
+    tags = serializers.PrimaryKeyRelatedField(many=True, queryset=Tag.objects.all())
+    ingredients = RecipeIngredientSerializer(many=True)
 
 
     def create(self, validated_data):
-        print(validated_data)
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(**validated_data)
@@ -70,9 +76,12 @@ class RecipePostSerializer(serializers.ModelSerializer):
         for ingredient in ingredients:
             print(ingredient)
             pk = ingredient.get('id')
+            print('1')
             amount = ingredient.get('amount')
+            print(2)
             current_ingredient = Ingredient.objects.get(
                 pk=pk)
+            print(3)
             RecipeIngredient.objects.create(
                 ingredient=current_ingredient, recipe=recipe, amount=amount)
         return recipe 

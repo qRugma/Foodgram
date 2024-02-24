@@ -9,7 +9,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .models import Tag, Ingredient, Recipe
 from core.models import Follow
 from .serializers import (
-    TagSerializer, IngredientSerializer, RecipeSerializer, FollowSerializer
+    TagSerializer, IngredientSerializer, RecipePostSerializer, FollowSerializer
 )
 
 
@@ -29,7 +29,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
-    serializer_class = RecipeSerializer
+    serializer_class = RecipePostSerializer
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
