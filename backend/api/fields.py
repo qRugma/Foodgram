@@ -5,20 +5,6 @@ from django.core.files.base import ContentFile
 
 
 
-
-class TagListingField(serializers.RelatedField):
- 
-    def to_representation(self, value):
-        return {
-            "id": value.id,
-            "name": value.name,
-            "color": value.color,
-            "slug": value.slug,
-        }
-
-
-
-
 class Base64ImageField(serializers.ImageField):
     def to_internal_value(self, data):
         if isinstance(data, str) and data.startswith('data:image'):
