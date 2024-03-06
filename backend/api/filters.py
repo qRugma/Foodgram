@@ -4,7 +4,8 @@ from .models import Recipe, Tag
 
 
 class RecipeFilter(django_filters.FilterSet):
-    author = django_filters.NumberFilter(field_name='author', lookup_expr='exact')
+    author = django_filters.NumberFilter(
+        field_name='author', lookup_expr='exact')
     tags = django_filters.ModelMultipleChoiceFilter(
         field_name='tags__slug',
         to_field_name='slug',

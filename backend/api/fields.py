@@ -1,13 +1,11 @@
-from pprint import  pprint
 import base64
 from rest_framework import serializers
 from django.core.files.base import ContentFile
 from .models import Tag
 
 
-
 class TagListingField(serializers.RelatedField):
- 
+
     def to_representation(self, value):
         return {
             "id": value.id,
@@ -15,24 +13,22 @@ class TagListingField(serializers.RelatedField):
             "color": value.color,
             "slug": value.slug,
         }
+
     def to_internal_value(self, data):
         return Tag.objects.get(pk=data)
 
 
 class AuthorField(serializers.RelatedField):
- 
     def to_representation(self, value):
         author = value.author
         return {
             'email': author.email,
-            'id': author.id, 
+            'id': author.id,
             'username': author.username,
             'first_name': author.first_name,
             'last_name': author.last_name,
             # 'is_subscribed': author.is_subscribed,
         }
-
-
 
 
 class Base64ImageField(serializers.ImageField):

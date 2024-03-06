@@ -6,8 +6,8 @@ from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
     help = (
-    'Load Ingredient model '
-    'from file ingredient.csv in django root.'
+        'Load Ingredient model '
+        'from file ingredient.csv in django root.'
     )
 
     def handle(self, *args, **options):
@@ -19,4 +19,3 @@ class Command(BaseCommand):
                 measurement_unit=row[1],
             )
         print('done')
-        

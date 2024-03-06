@@ -10,8 +10,10 @@ class MyUser(AbstractUser):
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name',]
     USERNAME_FIELD = 'email'
 
+
 from api.models import Recipe
 User = get_user_model()
+
 
 class Follow(models.Model):
     user = models.ForeignKey(
@@ -29,19 +31,20 @@ class Follow(models.Model):
             )
         ]
 
+
 class FavoritedRecipe(models.Model):
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='favorited'
+        User, on_delete=models.PROTECT, related_name='favorited'
     )
     recipe = models.ForeignKey(
-        Recipe, on_delete=models.CASCADE, related_name='favorited'
+        Recipe, on_delete=models.PROTECT, related_name='favorited'
     )
 
 
 class Cart(models.Model):
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='cart'
+        User, on_delete=models.PROTECT, related_name='cart'
     )
     recipe = models.ForeignKey(
-        Recipe, on_delete=models.CASCADE, related_name='who_cart'
+        Recipe, on_delete=models.PROTECT, related_name='who_cart'
     )
