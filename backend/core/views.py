@@ -1,26 +1,14 @@
 from django.contrib.auth import get_user_model
-from rest_framework import status, viewsets
 from django.shortcuts import get_object_or_404
-from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework import status, viewsets
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from .serializers import (UserSerializer, FollowSerializer,
-                          FavoritedRecipeSerializer, CartSerializer)
-from .models import Follow, FavoritedRecipe, Cart
+
+from .models import Follow
+from .serializers import FollowSerializer
+
 User = get_user_model()
-
-
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = ()
-    http_method_names = ('get', 'post')
-
-    @action(methods=['GET'], detail=False,
-            permission_classes=(IsAuthenticated,))
-    def me(self, request):
-        serializer = UserSerializer(request.user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 def standart(request, serializer_class, model_class):
@@ -42,31 +30,13 @@ class subscriptions(viewsets.ReadOnlyModelViewSet):
     serializer_class = FollowSerializer
 
     def get_queryset(self):
-        return Follow.objects.filter(user=self.request.user)
+        return Follow.objects.filter(follower=self.request.user)
 
 
 @permission_classes([IsAuthenticated])
 @api_view(['DELETE', 'POST'])
 def subscribe(request, follow_id):
-    request.data['following'] = follow_id
-    request.data['user'] = request.user.id
+    request.data['follower'] = request.user.id
+    request.data['user'] = follow_id
     return standart(
         request, FollowSerializer, Follow)
-
-
-@permission_classes([IsAuthenticated])
-@api_view(['DELETE', 'POST'])
-def favorite(request, recipe_id):
-    request.data['recipe'] = recipe_id
-    request.data['user'] = request.user.id
-    return standart(
-        request, FavoritedRecipeSerializer, FavoritedRecipe)
-
-
-@permission_classes([IsAuthenticated])
-@api_view(['DELETE', 'POST'])
-def cart(request, recipe_id):
-    request.data['recipe'] = recipe_id
-    request.data['user'] = request.user.id
-    return standart(
-        request, CartSerializer, Cart)

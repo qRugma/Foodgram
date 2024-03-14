@@ -3,14 +3,11 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-
 SECRET_KEY = 'django-insecure-6l*g_(esnu(_d5w*ehl$nu$dgq$l)#_2gqi=plv(!ujx^gl&i#'
 
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
-
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -20,7 +17,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'django_filters', 
+    'django_filters',
     'rest_framework.authtoken',
     'djoser',
     'core',

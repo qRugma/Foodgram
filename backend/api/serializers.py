@@ -1,10 +1,12 @@
 
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from .models import Recipe, Tag, Ingredient, RecipeIngredient, RecipeTag
-from .fields import Base64ImageField, TagListingField, AuthorField
-from core.models import Follow, FavoritedRecipe, Cart
+from rest_framework.validators import UniqueTogetherValidator
 
+from core.models import Follow
+from .fields import Base64ImageField, TagListingField
+from .models import (Cart, FavoritedRecipe, Ingredient, Recipe,
+                     RecipeIngredient, RecipeTag, Tag)
 
 User = get_user_model()
 
@@ -19,16 +21,6 @@ class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Ingredient
-
-
-# class RecipeTagSerializer(serializers.ModelSerializer):
-    # name = serializers.CharField(source='tag.name', read_only=True)
-    # color = serializers.CharField(source='tag.color', read_only=True)
-    # slug = serializers.CharField(source='tag.slug', read_only=True)
-    # id = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.filter())
-    # class Meta:
-    #     fields = ('id', 'name', 'color', 'slug')
-    #     model = RecipeTag
 
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
@@ -54,11 +46,10 @@ class RecipeAuthorSerialzier(serializers.ModelSerializer):
         user = self.context['request'].user
         if not user.is_authenticated:
             return False
-        return Follow.objects.filter(user=user, following=obj).exists()
+        return Follow.objects.filter(user=obj, follower=user).exists()
 
 
 class RecipeSerialzier(serializers.ModelSerializer):
-    # author = AuthorField(source='*', read_only=True)
     author = RecipeAuthorSerialzier(read_only=True)
     author_write = serializers.SlugRelatedField(
         source='author',
@@ -73,7 +64,23 @@ class RecipeSerialzier(serializers.ModelSerializer):
     ingredients = RecipeIngredientSerializer(
         source='recipeingredient_set', many=True)
     tags = TagListingField(many=True, queryset=Tag.objects.all())
-    # tags = RecipeTagSerializer(source='recipetag_set', many=True)
+
+    def validate(self, data):
+        ingredients = data.get('recipeingredient_set')
+        tags = data.get('tags')
+        if not ingredients:
+            raise serializers.ValidationError("ingredients required")
+        if not tags:
+            raise serializers.ValidationError("tags required")
+        if len(set(tags)) < len(tags):
+            raise serializers.ValidationError("only unique tags")
+        c = []
+        for i in ingredients:
+            c.append(i['id'])
+        if len(set(c)) < len(c):
+            raise serializers.ValidationError("only unique ingredients")
+
+        return data
 
     def get_is_favorited(self, obj):
         user = self.context['request'].user
@@ -118,7 +125,45 @@ class RecipeSerialzier(serializers.ModelSerializer):
         instance.save()
         return instance
 
-
     class Meta:
         fields = '__all__'
         model = Recipe
+
+
+class BaseUserRecipeSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(source='recipe.id', read_only=True)
+    name = serializers.CharField(source='recipe.name', read_only=True)
+    image = serializers.ImageField(
+        source='recipe.image', read_only=True, use_url=False)
+    cooking_time = serializers.IntegerField(
+        source='recipe.cooking_time', read_only=True)
+    user = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), write_only=True)
+    recipe = serializers.PrimaryKeyRelatedField(
+        queryset=Recipe.objects.all(), write_only=True)
+
+
+class FavoritedRecipeSerializer(BaseUserRecipeSerializer):
+
+    class Meta:
+        model = FavoritedRecipe
+        fields = '__all__'
+        validators = [
+            UniqueTogetherValidator(
+                queryset=FavoritedRecipe.objects.all(),
+                fields=('user', 'recipe')
+            )
+        ]
+
+
+class CartSerializer(BaseUserRecipeSerializer):
+
+    class Meta:
+        model = Cart
+        fields = '__all__'
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Cart.objects.all(),
+                fields=('user', 'recipe')
+            )
+        ]

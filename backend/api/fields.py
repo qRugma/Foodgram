@@ -1,6 +1,8 @@
 import base64
-from rest_framework import serializers
+
 from django.core.files.base import ContentFile
+from rest_framework import serializers
+
 from .models import Tag
 
 
@@ -15,7 +17,10 @@ class TagListingField(serializers.RelatedField):
         }
 
     def to_internal_value(self, data):
-        return Tag.objects.get(pk=data)
+        try:
+            return Tag.objects.get(pk=data)
+        except Tag.DoesNotExist:
+            raise serializers.ValidationError(f"tag {data} not exists")
 
 
 class AuthorField(serializers.RelatedField):
