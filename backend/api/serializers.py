@@ -1,9 +1,10 @@
 
 from django.contrib.auth import get_user_model
+
+from core.models import Follow
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from core.models import Follow
 from .fields import Base64ImageField, TagListingField
 from .models import (Cart, FavoritedRecipe, Ingredient, Recipe,
                      RecipeIngredient, RecipeTag, Tag)
