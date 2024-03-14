@@ -2,6 +2,6 @@
 
 ip: 158.160.75.146
 
-pass: qwertyuiop
+pass: '''qwertyuiop'''
 
 login: example
