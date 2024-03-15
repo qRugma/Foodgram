@@ -10,7 +10,7 @@ SECRET_KEY = os.getenv(
     'django-insecure-6l*g_(esnu(_d5w*ehl$nu$dgq$l)#_2gqi=plv(!ujx^gl&i#'
 )
 
-DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = config('DEBUG_DJANGO', default=True, cast=bool)
 
 DOMEN = os.getenv('DOMEN')
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', DOMEN]
@@ -72,6 +72,14 @@ DATABASES = {
     }
 }
 
+if DEBUG:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": "db.sqlite3",
+        }
+    }
+
 
 AUTH_USER_MODEL = 'core.MyUser'
 
@@ -111,6 +119,7 @@ DJOSER = {
     },
     'PERMISSIONS': {
         'user': ['core.permissions.UserOrReadAnother'],
+        'user_list': [],
     },
     'HIDE_USERS': False
 }

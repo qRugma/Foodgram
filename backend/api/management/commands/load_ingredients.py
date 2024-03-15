@@ -1,4 +1,4 @@
-import csv
+import json
 
 from django.core.management.base import BaseCommand
 
@@ -12,11 +12,10 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
-        file = open('ingredients.csv', 'r', encoding='UTF-8')
-        spamreader = csv.reader(file, delimiter=',', quotechar='|')
-        for row in spamreader:
-            Ingredient.objects.create(
-                name=row[0],
-                measurement_unit=row[1],
+        file = open('data/ingredients.json', 'r', encoding='UTF-8')
+        data = json.load(file)
+        for row in data:
+            Ingredient.objects.get_or_create(
+                **row
             )
         print('done')

@@ -6,6 +6,10 @@ from .models import Ingredient, Recipe, RecipeIngredient, RecipeTag, Tag
 class IngredientAdmin(admin.ModelAdmin):
     model = Ingredient
     search_fields = ('name',)
+    list_display = (
+        'name',
+        'measurement_unit'
+    )
 
 
 class TagAdmin(admin.ModelAdmin):
@@ -39,7 +43,15 @@ class RecipeAdmin(admin.ModelAdmin):
     )
     model = Recipe
     inlines = (RecipeIngredientInline, TagInline)
-    search_fields = ('name', 'author',)
+    search_fields = (
+        'name', 'author__email', 'tags__slug',
+        'tags__name',)
+    list_filter = ('tags',)
+    readonly_fields = ('favorited',)
+
+    def favorited(self, obj):
+        return obj.favorited.count()
+    favorited.short_description = 'Лайков'
 
 
 admin.site.register(Ingredient, IngredientAdmin)
