@@ -10,10 +10,16 @@ SECRET_KEY = os.getenv(
     'django-insecure-6l*g_(esnu(_d5w*ehl$nu$dgq$l)#_2gqi=plv(!ujx^gl&i#'
 )
 
-DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = config('DEBUG_DJANGO', default=True, cast=bool)
 
 DOMEN = os.getenv('DOMEN')
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', DOMEN]
+
+if DEBUG:
+    CSRF_TRUSTED_ORIGINS = ['http://*', 'https://*']
+if not DEBUG:
+    CSRF_TRUSTED_ORIGINS = [f'http://{DOMEN}', f'https://{DOMEN}']
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -72,6 +78,14 @@ DATABASES = {
     }
 }
 
+if DEBUG:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": "db.sqlite3",
+        }
+    }
+
 
 AUTH_USER_MODEL = 'core.MyUser'
 
@@ -111,6 +125,7 @@ DJOSER = {
     },
     'PERMISSIONS': {
         'user': ['core.permissions.UserOrReadAnother'],
+        'user_list': [],
     },
     'HIDE_USERS': False
 }
@@ -127,7 +142,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = BASE_DIR / 'collected_static'
+STATIC_ROOT = '/collected_static'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

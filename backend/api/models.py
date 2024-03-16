@@ -82,7 +82,7 @@ class FavoritedRecipe(models.Model):
         User, on_delete=models.PROTECT, related_name='favorited'
     )
     recipe = models.ForeignKey(
-        Recipe, on_delete=models.PROTECT, related_name='favorited',
+        Recipe, on_delete=models.CASCADE, related_name='favorited',
         verbose_name='Рецепт'
     )
 
@@ -95,7 +95,7 @@ class Cart(models.Model):
         User, on_delete=models.PROTECT, related_name='cart'
     )
     recipe = models.ForeignKey(
-        Recipe, on_delete=models.PROTECT, related_name='who_cart',
+        Recipe, on_delete=models.CASCADE, related_name='who_cart',
         verbose_name='Рецепт'
     )
 
