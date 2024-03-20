@@ -66,26 +66,36 @@ class RecipeViewSet(viewsets.ModelViewSet):
             string += f"{name} ({value['unit']}) — {value['amount']}\n"
         return HttpResponse(string, content_type='application/txt')
 
-    def standart_POST_action(self, request, pk):
+    def standart_POST_action(self, request, pk, serializer_class, model):
         request.data['recipe'] = pk
         request.data['user'] = request.user.id
         return standart__POST(
-            request, FavoritedRecipeSerializer, FavoritedRecipe)
-
+            request, serializer_class, model)
+    
+    def standart_DELETE_action(self, request, pk, serializer_class, model):
+        request.data['recipe'] = pk
+        request.data['user'] = request.user.id
+        return standart__DELETE(
+            request, serializer_class, model)
+    
     @action(detail=True, methods=['POST'],
             permission_classes=[IsAuthenticated])
     def favorite(self, request, pk):
-        return self.standart_POST_action(request, pk)
+        return self.standart_POST_action(
+            request, pk, FavoritedRecipeSerializer, FavoritedRecipe)
     
     @action(detail=True, methods=['POST'],
             permission_classes=[IsAuthenticated])
     def shopping_cart(self, request, pk):
-        return self.standart_POST_action(request, pk)
+        return self.standart_POST_action(
+            request, pk, CartSerializer, Cart)
 
     @favorite.mapping.delete
+    def delete_favorite(self, request, pk):
+        return self.standart_DELETE_action(
+            request, pk, FavoritedRecipeSerializer, FavoritedRecipe)
+    
     @shopping_cart.mapping.delete
-    def standart_DELETE_action(self, request, pk):
-        request.data['recipe'] = pk
-        request.data['user'] = request.user.id
-        return standart__DELETE(
-            request, FavoritedRecipeSerializer, FavoritedRecipe)
+    def delete_shopping_cart(self, request, pk):
+        return self.standart_DELETE_action(
+            request, pk, CartSerializer, Cart)
