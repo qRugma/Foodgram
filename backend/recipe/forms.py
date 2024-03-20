@@ -8,4 +8,4 @@ class RecipeForm(forms.ModelForm):
         fields = '__all__'
     
     def clean(self):
-        print(self)
+        dir(self)
