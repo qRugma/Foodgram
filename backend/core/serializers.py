@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 
-from api.models import Recipe
-from api.serializers import RecipeAuthorSerialzier
+from recipe.models import Recipe
+from recipe.serializers import RecipeAuthorSerialzier
 from djoser.serializers import UserSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
@@ -23,9 +23,10 @@ class UserSerializer(UserSerializer):
 
     def get_is_subscribed(self, obj):
         user = self.context.get('request').user
-        if user == obj:
-            return False
-        return True
+        return (
+            user.is_authenticated 
+            and user.subscriptions.filter(user=obj).exists()
+        )
 
 
 class ShortRecipeSerialzier(serializers.ModelSerializer):
@@ -54,7 +55,11 @@ class FollowSerializer(RecipeAuthorSerialzier):
         queryset=User.objects.all(), write_only=True)
 
     def get_is_subscribed(self, obj):
-        return True
+        user = self.context.get('request').user
+        return (
+            user.is_authenticated 
+            and user.subscriptions.filter(user=obj.user).exists()
+        )
 
     def get_recipes(self, obj):
         limit = self.context['request'].query_params.get('recipes_limit')

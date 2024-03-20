@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'djoser',
     'core',
+    'recipe',
     'api',
 ]
 
@@ -148,3 +149,6 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MAX_LENGTH_USER_NAME = 150
+ITEMS_ON_ADMIN_PAGE = 5
