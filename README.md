@@ -4,10 +4,9 @@ ip: ```158.160.75.146```
 
 domen: https://foodgramrugma.zapto.org
 
-pass: ```jhkjdhaskdKASHDKASDK```
-
 login: example@example.ru
 
+pass: ```jhkjdhaskdKASHDKASDK```
 
 Не забудьте создать ```.env```, пример есть в ```env_example```
 Для запуска проекта на проде:
