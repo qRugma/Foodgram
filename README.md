@@ -15,3 +15,8 @@ docker compose -f docker-compose.production.yml exec backend python manage.py mi
 ```
 docker compose -f docker-compose.production.yml exec backend python manage.py load_ingredients
 ```
+
+Для создания супер пользователя:
+```
+docker compose -f docker-compose.production.yml exec backend python manage.py createsuperuser
+```
