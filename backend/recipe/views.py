@@ -10,8 +10,8 @@ from .filters import RecipeFilter
 from .models import Cart, FavoritedRecipe, Ingredient, Recipe, Tag
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (CartSerializer, FavoritedRecipeSerializer,
-                          IngredientSerializer, RecipeSerialzier,
-                          TagSerializer)
+                          IngredientSerializer, ReadRecipeSerialzier,
+                          TagSerializer, WriteRecipeSerializer)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -30,15 +30,15 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
-    serializer_class = RecipeSerialzier
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
     http_method_names = ('get', 'post', 'patch', 'delete')
     permission_classes = (IsAuthorOrReadOnly,)
 
-
-    def perform_create(self, serializer):
-        serializer.save(author_write=self.request.user)
+    def get_serializer_class(self):
+        if self.request.method in ('POST', 'PATCH'):
+            return WriteRecipeSerializer
+        return ReadRecipeSerialzier
 
     @action(detail=False, methods=['GET'],
             permission_classes=[IsAuthenticated])
@@ -71,19 +71,19 @@ class RecipeViewSet(viewsets.ModelViewSet):
         request.data['user'] = request.user.id
         return standart__POST(
             request, serializer_class, model)
-    
+
     def standart_DELETE_action(self, request, pk, serializer_class, model):
         request.data['recipe'] = pk
         request.data['user'] = request.user.id
         return standart__DELETE(
             request, serializer_class, model)
-    
+
     @action(detail=True, methods=['POST'],
             permission_classes=[IsAuthenticated])
     def favorite(self, request, pk):
         return self.standart_POST_action(
             request, pk, FavoritedRecipeSerializer, FavoritedRecipe)
-    
+
     @action(detail=True, methods=['POST'],
             permission_classes=[IsAuthenticated])
     def shopping_cart(self, request, pk):
@@ -94,7 +94,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def delete_favorite(self, request, pk):
         return self.standart_DELETE_action(
             request, pk, FavoritedRecipeSerializer, FavoritedRecipe)
-    
+
     @shopping_cart.mapping.delete
     def delete_shopping_cart(self, request, pk):
         return self.standart_DELETE_action(

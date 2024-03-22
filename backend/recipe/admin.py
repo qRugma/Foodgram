@@ -4,6 +4,7 @@ from .models import Ingredient, Recipe, RecipeIngredient, RecipeTag, Tag
 from .forms import RecipeForm
 from foodgram.settings import ITEMS_ON_ADMIN_PAGE
 
+
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
     model = Ingredient
@@ -12,6 +13,7 @@ class IngredientAdmin(admin.ModelAdmin):
         'name',
         'measurement_unit'
     )
+
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
@@ -60,7 +62,7 @@ class RecipeAdmin(admin.ModelAdmin):
         return ", ".join([
             tag.name for tag in obj.tags.all()[:ITEMS_ON_ADMIN_PAGE]
         ])
-    
+
     @admin.display(description='Ингредиенты')
     def ingredients_display(self, obj):
         return ", ".join([

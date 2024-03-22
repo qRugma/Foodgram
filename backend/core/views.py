@@ -26,13 +26,13 @@ def standart__DELETE(request, serializer_class, model_class):
     obj.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 class SubscriptionsViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (IsAuthenticated,)
     serializer_class = FollowSerializer
 
     def get_queryset(self):
         a = Follow.objects.filter(follower=self.request.user)
-        print('-'* 10)
         return a
 
 

@@ -13,6 +13,6 @@ router_v1.register('ingredients', IngredientViewSet, basename='ingredients')
 router_v1.register('recipes', RecipeViewSet, basename='recipes')
 
 urlpatterns = [
-# будет вставляться промежуточный /version_2/
+    # будет вставляться промежуточный /version_2/
     path('', include(router_v1.urls)),
 ]
