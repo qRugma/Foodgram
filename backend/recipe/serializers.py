@@ -1,7 +1,6 @@
 
 from django.contrib.auth import get_user_model
 
-from core.models import Follow
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
@@ -24,6 +23,13 @@ class IngredientSerializer(serializers.ModelSerializer):
         model = Ingredient
 
 
+class ShortRecipeSerialzier(serializers.ModelSerializer):
+
+    class Meta:
+        fields = ('id', 'name', 'image', 'cooking_time')
+        model = Recipe
+
+
 class RecipeIngredientSerializer(serializers.ModelSerializer):
     name = serializers.CharField(source='ingredient.name', read_only=True)
     measurement_unit = serializers.CharField(
@@ -32,6 +38,14 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = ('id', 'name', 'measurement_unit', 'amount')
+        model = RecipeIngredient
+
+
+# стоит ли вообще создавать этот класс?
+# по мне было легче и понятней прошлый вариант с одиим классом
+class WriteRecipeIngredientSerializer(RecipeIngredientSerializer):
+    class Meta:
+        fields = ('id', 'amount')
         model = RecipeIngredient
 
 
@@ -45,9 +59,10 @@ class RecipeAuthorSerialzier(serializers.ModelSerializer):
 
     def get_is_subscribed(self, obj):
         user = self.context['request'].user
-        if not user.is_authenticated:
-            return False
-        return Follow.objects.filter(user=obj, follower=user).exists()
+        return (
+            user.is_authenticated
+            and user.subscriptions.filter(user=obj).exists()
+        )
 
 
 class BaseUserRecipeSerializer(serializers.ModelSerializer):
@@ -124,30 +139,40 @@ class WriteRecipeSerializer(ReadRecipeSerialzier):
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(), many=True
     )
+    ingredients = WriteRecipeIngredientSerializer(
+        source='recipeingredient_set', many=True)
 
     def create_tags_ingredients(self, tags, ingredients, recipe):
+        tags_obj = []
+        ingredients_obj = []
         for tag in tags:
-            RecipeTag.objects.create(
-                tag=tag, recipe=recipe)
+            tags_obj.append(RecipeTag(tag=tag, recipe=recipe))
+        print(ingredients)
+        ingredients = sorted(ingredients, key=lambda i: i['id'].name)
         for ingredient in ingredients:
             current_ingredient = ingredient['id']
             amount = ingredient['amount']
-            RecipeIngredient.objects.create(
-                ingredient=current_ingredient, recipe=recipe, amount=amount)
+            ingredients_obj.append(RecipeIngredient(
+                ingredient=current_ingredient, recipe=recipe, amount=amount))
+        RecipeTag.objects.bulk_create(tags_obj)
+        RecipeIngredient.objects.bulk_create(ingredients_obj)
+
+    def validate(self, data):
+        ingredients = data.get('recipeingredient_set')
+        tags = data.get('tags')
+        if not ingredients:
+            raise serializers.ValidationError("ingredients required")
+        if not tags:
+            raise serializers.ValidationError("tags required")
+        return data
 
     def validate_ingredients(self, value):
-        c = []
-        if not value:
-            raise serializers.ValidationError("ingredients required")
-        for i in value:
-            c.append(i['id'])
+        c = [i['id'] for i in value]
         if len(set(c)) < len(c):
             raise serializers.ValidationError("only unique ingredients")
         return value
 
     def validate_tags(self, value):
-        if not value:
-            raise serializers.ValidationError("tags required")
         if len(set(value)) < len(value):
             raise serializers.ValidationError("only unique tags")
         return value
@@ -155,7 +180,6 @@ class WriteRecipeSerializer(ReadRecipeSerialzier):
     def create(self, validated_data):
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('recipeingredient_set')
-        validated_data['author'] = validated_data.pop('author_write')
         recipe = Recipe.objects.create(**validated_data)
         self.create_tags_ingredients(tags, ingredients, recipe)
         return recipe

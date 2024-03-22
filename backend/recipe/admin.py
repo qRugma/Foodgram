@@ -1,7 +1,6 @@
 from django.contrib import admin
 
 from .models import Ingredient, Recipe, RecipeIngredient, RecipeTag, Tag
-from .forms import RecipeForm
 from foodgram.settings import ITEMS_ON_ADMIN_PAGE
 
 
@@ -33,11 +32,14 @@ class TagAdmin(admin.ModelAdmin):
 class RecipeIngredientInline(admin.TabularInline):
     model = RecipeIngredient
     extra = 0
+    min_num = 1
+# но можно удалить ингредиенты до нуля...
 
 
 class RecipeTagInline(admin.TabularInline):
     model = RecipeTag
     extra = 0
+    min_num = 1
 
 
 @admin.register(Recipe)
@@ -49,7 +51,6 @@ class RecipeAdmin(admin.ModelAdmin):
         'ingredients_display',
     )
     model = Recipe
-    form = RecipeForm
     inlines = (RecipeIngredientInline, RecipeTagInline)
     search_fields = (
         'name', 'author__email', 'tags__slug',

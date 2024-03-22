@@ -3,14 +3,18 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
 from .validators import color_code
+from foodgram.settings import MAX_LENGTH_IN_RECIPES
 
 User = get_user_model()
+MIN_AMOUNT = 1
 
 
 class Tag(models.Model):
-    name = models.CharField('Название', max_length=200)
+    name = models.CharField('Название', max_length=MAX_LENGTH_IN_RECIPES)
     color = models.CharField('Цвет', max_length=7, validators=[color_code])
-    slug = models.SlugField('Слаг', max_length=200, unique=True)
+    # becose color in hex interpretation
+    slug = models.SlugField(
+        'Слаг', max_length=MAX_LENGTH_IN_RECIPES, unique=True)
 
     class Meta:
         verbose_name = 'Тег'
@@ -21,8 +25,9 @@ class Tag(models.Model):
 
 
 class Ingredient(models.Model):
-    name = models.CharField('Название', max_length=200)
-    measurement_unit = models.CharField('Единица измерения', max_length=200)
+    name = models.CharField('Название', max_length=MAX_LENGTH_IN_RECIPES)
+    measurement_unit = models.CharField(
+        'Единица измерения', max_length=MAX_LENGTH_IN_RECIPES)
 
     class Meta:
         verbose_name = 'Ингредиент'
@@ -36,7 +41,7 @@ class Recipe(models.Model):
     author = models.ForeignKey(
         User, on_delete=models.CASCADE,
         verbose_name='Автор')
-    name = models.TextField('Название', max_length=200)
+    name = models.TextField('Название', max_length=MAX_LENGTH_IN_RECIPES)
     image = models.ImageField('Картинка', upload_to='recipes/')
     text = models.TextField('Текст')
     ingredients = models.ManyToManyField(
@@ -47,6 +52,7 @@ class Recipe(models.Model):
         'Время приготовления', validators=[MinValueValidator(1)])
 
     class Meta:
+        ordering = ['name']
         verbose_name = 'Рецепт'
         verbose_name_plural = 'рецепты'
         default_related_name = 'recipes'
@@ -77,7 +83,7 @@ class RecipeIngredient(models.Model):
     ingredient = models.ForeignKey(
         Ingredient, on_delete=models.PROTECT, verbose_name='Ингредиент')
     amount = models.PositiveSmallIntegerField(
-        'Количество', validators=[MinValueValidator(1)])
+        'Количество', validators=[MinValueValidator(MIN_AMOUNT)])
 
     class Meta:
         verbose_name = 'Ингредиент'

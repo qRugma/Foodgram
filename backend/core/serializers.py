@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 
 from recipe.models import Recipe
-from recipe.serializers import RecipeAuthorSerialzier
+from recipe.serializers import ShortRecipeSerialzier
 from djoser.serializers import UserSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
@@ -29,14 +29,7 @@ class UserSerializer(UserSerializer):
         )
 
 
-class ShortRecipeSerialzier(serializers.ModelSerializer):
-
-    class Meta:
-        fields = ('id', 'name', 'image', 'cooking_time')
-        model = Recipe
-
-
-class FollowSerializer(RecipeAuthorSerialzier):
+class FollowSerializer(serializers.ModelSerializer):
     email = serializers.CharField(source='user.email', read_only=True)
     id = serializers.IntegerField(source='user.id', read_only=True)
     username = serializers.CharField(
