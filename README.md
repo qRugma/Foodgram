@@ -20,3 +20,12 @@ docker compose -f docker-compose.production.yml exec backend python manage.py lo
 ```
 docker compose -f docker-compose.production.yml exec backend python manage.py createsuperuser
 ```
+
+Для запуска сервера разработки:
+```
+cd backend
+python -m venv env
+. env/bin/activate
+python manage.py migrate
+python manage.py runserver
+```
