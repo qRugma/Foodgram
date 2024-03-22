@@ -9,6 +9,7 @@ login: example@example.ru
 pass: ```jhkjdhaskdKASHDKASDK```
 
 Не забудьте создать ```.env```, пример есть в ```env_example```
+
 Для запуска проекта на проде:
 ```
 docker compose -f docker-compose.production.yml up -d
