@@ -2,7 +2,7 @@
 
 ip: 158.160.75.146
 domen: https://foodgramrugma.zapto.org
-pass: jhkjdhaskdKASHDKASDK
+pass: ```jhkjdhaskdKASHDKASDK```
 login: example@example.ru
 
 
