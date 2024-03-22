@@ -47,6 +47,18 @@ class FollowSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(), write_only=True)
 
+    class Meta:
+        model = Follow
+        fields = ('id', 'username', 'follower', 'user', 'first_name',
+                  'last_name', 'email', 'is_subscribed', 'recipes_count',
+                  'recipes',)
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Follow.objects.all(),
+                fields=('user', 'follower')
+            )
+        ]
+
     def get_is_subscribed(self, obj):
         user = self.context.get('request').user
         return (
@@ -60,19 +72,6 @@ class FollowSerializer(serializers.ModelSerializer):
             limit = int(limit)
         recipes = Recipe.objects.filter(author=obj.follower)[:limit]
         return ShortRecipeSerialzier(recipes, many=True).data
-
-    class Meta:
-        model = Follow
-        fields = ('id', 'username', 'follower', 'user', 'first_name',
-                  'last_name', 'email', 'is_subscribed', 'recipes_count',
-                  'recipes',)
-
-        validators = [
-            UniqueTogetherValidator(
-                queryset=Follow.objects.all(),
-                fields=('user', 'follower')
-            )
-        ]
 
     def validate(self, data):
         if data['user'] == data['follower']:

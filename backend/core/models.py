@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models import UniqueConstraint, CheckConstraint, Q, F
 
 
 class MyUser(AbstractUser):
@@ -26,4 +27,12 @@ class Follow(models.Model):
     class Meta:
         verbose_name = 'Подписчик'
         verbose_name_plural = 'подписчики'
-        unique_together = ('user', 'follower',)
+        constraints = [
+            UniqueConstraint(
+                fields=['user', 'follower'],
+                name='unique_follower'),
+            CheckConstraint(
+                check=~Q(user=F('follower')),
+                name="can't_sub_on_self"
+            )
+        ]

@@ -5,7 +5,7 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 
-from core.views import standart__DELETE, standart__POST
+from core.views import standart_action_DELETE, standart_action_POST
 from .filters import RecipeFilter
 from .models import Cart, FavoritedRecipe, Ingredient, Recipe, Tag
 from .permissions import IsAuthorOrReadOnly
@@ -69,13 +69,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def standart_POST_action(self, request, pk, serializer_class, model):
         request.data['recipe'] = pk
         request.data['user'] = request.user.id
-        return standart__POST(
+        return standart_action_POST(
             request, serializer_class, model)
 
     def standart_DELETE_action(self, request, pk, serializer_class, model):
         request.data['recipe'] = pk
         request.data['user'] = request.user.id
-        return standart__DELETE(
+        return standart_action_DELETE(
             request, serializer_class, model)
 
     @action(detail=True, methods=['POST'],

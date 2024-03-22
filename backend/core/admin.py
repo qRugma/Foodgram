@@ -44,13 +44,13 @@ class MyUserAdmin(UserAdmin):
         CartInline,
     )
 
+    @admin.display(description='Рецептов')
     def recipes_count(self, obj):
         return obj.recipes.count()
-    recipes_count.short_description = 'Рецептов'
 
+    @admin.display(description='Подписчиков')
     def followers_count(self, obj):
         return obj.followers.count()
-    followers_count.short_description = 'Подписчиков'
 
 
 admin.site.register(MyUser, MyUserAdmin)

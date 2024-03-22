@@ -1,12 +1,14 @@
 from django.contrib.auth import get_user_model
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
+
+from foodgram.settings import MAX_LENGTH_IN_RECIPES, MAX_NUM_IN_RECIPES
+
 from .validators import color_code
-from foodgram.settings import MAX_LENGTH_IN_RECIPES
 
 User = get_user_model()
-MIN_AMOUNT = 1
+MIN_NATUR_NUM = 1
 
 
 class Tag(models.Model):
@@ -49,7 +51,9 @@ class Recipe(models.Model):
     tags = models.ManyToManyField(
         Tag, through='RecipeTag', verbose_name='Теги')
     cooking_time = models.PositiveSmallIntegerField(
-        'Время приготовления', validators=[MinValueValidator(1)])
+        'Время приготовления', validators=[
+            MinValueValidator(MIN_NATUR_NUM),
+            MaxValueValidator(MAX_NUM_IN_RECIPES)])
 
     class Meta:
         ordering = ['name']
@@ -83,7 +87,9 @@ class RecipeIngredient(models.Model):
     ingredient = models.ForeignKey(
         Ingredient, on_delete=models.PROTECT, verbose_name='Ингредиент')
     amount = models.PositiveSmallIntegerField(
-        'Количество', validators=[MinValueValidator(MIN_AMOUNT)])
+        'Количество', validators=[
+            MinValueValidator(MIN_NATUR_NUM),
+            MaxValueValidator(MAX_NUM_IN_RECIPES)])
 
     class Meta:
         verbose_name = 'Ингредиент'
