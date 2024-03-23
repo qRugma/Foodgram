@@ -10,6 +10,14 @@ class MyUser(AbstractUser):
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
     USERNAME_FIELD = 'email'
 
+    class Meta:
+        constrains = [
+            CheckConstraint(
+                check=~Q(username='me'),
+                name='username_cannot_be_me'
+            )
+        ]
+
 
 User = MyUser
 
@@ -33,6 +41,6 @@ class Follow(models.Model):
                 name='unique_follower'),
             CheckConstraint(
                 check=~Q(user=F('follower')),
-                name="can't_sub_on_self"
+                name='cannot_sub_on_self'
             )
         ]
