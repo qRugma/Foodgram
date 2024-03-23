@@ -64,7 +64,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         for name, value in strings.items():
             # â€” у меня это длинное тире
             string += f"{name} ({value['unit']}) — {value['amount']}\n"
-        return HttpResponse(string, content_type='application/txt')
+        return HttpResponse(string, content_type='text/txt')
 
     def standart_POST_action(self, request, pk, serializer_class):
         request.data['recipe'] = pk
