@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework import status
 from rest_framework.response import Response
@@ -14,6 +15,9 @@ def standart_action_POST(request, serializer_class):
 
 
 def standart_action_DELETE(request, model_class):
-    obj = get_object_or_404(model_class, **request.data)
-    obj.delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
+    try:
+        obj = model_class.objects.get(**request.data)
+        obj.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    except ObjectDoesNotExist:
+        return Response(status=status.HTTP_400_BAD_REQUEST)

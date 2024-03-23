@@ -66,19 +66,23 @@ class Recipe(models.Model):
 
 
 class RecipeTag(models.Model):
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE, verbose_name='рецепт')
     tag = models.ForeignKey(
-        Tag, on_delete=models.PROTECT, verbose_name='тег')
+        Tag, on_delete=models.CASCADE, verbose_name='тег')
 
     class Meta:
-        verbose_name = 'Тег'
-        verbose_name_plural = 'теги'
+        verbose_name = 'Тег в рецепте'
+        verbose_name_plural = 'теги в рецептах'
         constraints = [
             UniqueConstraint(
                 fields=['tag', 'recipe'],
                 name='unique_tag_in_recipe'
             )
         ]
+
+    def __str__(self):
+        return f'{self.tag} в {self.recipe}'
 
 
 class RecipeIngredient(models.Model):
@@ -92,8 +96,8 @@ class RecipeIngredient(models.Model):
             MaxValueValidator(MAX_NUM_IN_RECIPES)])
 
     class Meta:
-        verbose_name = 'Ингредиент'
-        verbose_name_plural = 'ингредиеты'
+        verbose_name = 'Ингредиент в рецепте'
+        verbose_name_plural = 'ингредиеты в рецептах'
         constraints = [
             UniqueConstraint(
                 fields=['ingredient', 'recipe'],
@@ -101,10 +105,13 @@ class RecipeIngredient(models.Model):
             )
         ]
 
+    def __str__(self):
+        return f'{self.ingredient} в {self.recipe}'
 
 class FavoritedRecipe(models.Model):
     user = models.ForeignKey(
-        User, on_delete=models.PROTECT, related_name='favorited'
+        User, on_delete=models.CASCADE, related_name='favorited',
+        verbose_name='Пользователь'
     )
     recipe = models.ForeignKey(
         Recipe, on_delete=models.CASCADE, related_name='favorited',
@@ -112,6 +119,8 @@ class FavoritedRecipe(models.Model):
     )
 
     class Meta:
+        verbose_name = 'Рецепт в любимом'
+        verbose_name_plural = 'рецепты в любимых'
         constraints = [
             UniqueConstraint(
                 fields=['user', 'recipe'],
@@ -119,10 +128,14 @@ class FavoritedRecipe(models.Model):
             )
         ]
 
+    def __str__(self):
+        return f'{self.recipe} в любимом {self.user}'
+
 
 class Cart(models.Model):
     user = models.ForeignKey(
-        User, on_delete=models.PROTECT, related_name='cart'
+        User, on_delete=models.CASCADE, related_name='cart',
+        verbose_name='Пользователь'
     )
     recipe = models.ForeignKey(
         Recipe, on_delete=models.CASCADE, related_name='who_cart',
@@ -130,9 +143,14 @@ class Cart(models.Model):
     )
 
     class Meta:
+        verbose_name = 'Рецепт в корзине'
+        verbose_name_plural = 'рецепты в корзинах'
         constraints = [
             UniqueConstraint(
                 fields=['user', 'recipe'],
                 name='unique_cart_position'
             )
         ]
+
+    def __str__(self):
+        return f'{self.recipe} в корзине {self.user}'

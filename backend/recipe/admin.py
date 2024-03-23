@@ -1,6 +1,9 @@
 from django.contrib import admin
 
-from .models import Ingredient, Recipe, RecipeIngredient, RecipeTag, Tag
+from .models import (
+    Ingredient, Recipe, RecipeIngredient, RecipeTag, Tag,
+    FavoritedRecipe
+)
 from foodgram.settings import ITEMS_ON_ADMIN_PAGE
 
 
@@ -27,6 +30,37 @@ class TagAdmin(admin.ModelAdmin):
         'color',
     )
     search_fields = ('name', 'slug',)
+
+
+@admin.register(RecipeIngredient)
+class RecipeIngredientAdmin(admin.ModelAdmin):
+    model = RecipeIngredient
+    list_display = (
+        'recipe',
+        'ingredient',
+    )
+
+
+@admin.register(RecipeTag)
+class RecipeTagAdmin(admin.ModelAdmin):
+    model = RecipeTag
+    list_display = (
+        'recipe',
+        'tag',
+    )
+
+
+@admin.register(FavoritedRecipe)
+class FavoritedRecipeAdmin(admin.ModelAdmin):
+    model = FavoritedRecipe
+    list_display = (
+        'recipe',
+        'user',
+    )
+
+
+
+
 
 
 class RecipeIngredientInline(admin.TabularInline):

@@ -1,6 +1,6 @@
 import django_filters
-
-from recipe.models import Recipe, Ingredient
+from rest_framework import filters
+from recipe.models import Recipe
 
 
 class RecipeFilter(django_filters.FilterSet):
@@ -29,9 +29,7 @@ class RecipeFilter(django_filters.FilterSet):
             return queryset.filter(
                 favorited__user=user)
         return queryset
+    
 
-
-class IngredientFilter(django_filters.FilterSet):
-    class Meta:
-        model = Ingredient
-        fields = ('name',)
+class IngredientFilter(filters.SearchFilter):
+    search_param = "name"

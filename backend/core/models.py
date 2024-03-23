@@ -10,7 +10,7 @@ class MyUser(AbstractUser):
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
     USERNAME_FIELD = 'email'
 
-    class Meta:
+    class Meta(AbstractUser.Meta):
         constraints = [
             CheckConstraint(
                 check=~Q(username='me'),

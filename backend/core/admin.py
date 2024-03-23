@@ -25,6 +25,7 @@ class CartInline(StandartInline):
     model = Cart
 
 
+@admin.register(MyUser)
 class MyUserAdmin(UserAdmin):
     list_display = (
         'username',
@@ -53,6 +54,6 @@ class MyUserAdmin(UserAdmin):
         return obj.followers.count()
 
 
-admin.site.register(MyUser, MyUserAdmin)
+admin.site.register(Follow)
 admin.site.unregister(Group)
 admin.site.unregister(TokenProxy)
