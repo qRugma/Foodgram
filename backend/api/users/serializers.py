@@ -51,7 +51,7 @@ class FollowSerializer(serializers.ModelSerializer):
         limit = self.context['request'].query_params.get('recipes_limit')
         if limit:
             limit = int(limit)
-        recipes = Recipe.objects.filter(author=obj.follower)[:limit]
+        recipes = Recipe.objects.filter(author=obj.user)[:limit]
         return ShortRecipeSerialzier(recipes, many=True).data
 
     def validate(self, data):
