@@ -1,6 +1,6 @@
 import django_filters
 
-from recipe.models import Recipe
+from recipe.models import Recipe, Ingredient
 
 
 class RecipeFilter(django_filters.FilterSet):
@@ -29,3 +29,9 @@ class RecipeFilter(django_filters.FilterSet):
             return queryset.filter(
                 favorited__user=user)
         return queryset
+
+
+class IngredientFilter(django_filters.FilterSet):
+    class Meta:
+        model = Ingredient
+        fields = ('name',)
