@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 
 from recipe.models import Cart, FavoritedRecipe, Ingredient, Recipe, Tag
@@ -32,6 +33,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
+    pagination_class = PageNumberPagination
     http_method_names = ('get', 'post', 'patch', 'delete')
     permission_classes = (IsAuthorOrReadOnly,)
 
