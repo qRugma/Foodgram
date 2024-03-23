@@ -4,9 +4,11 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from .fields import Base64ImageField
-from .models import (Cart, FavoritedRecipe, Ingredient, Recipe,
-                     RecipeIngredient, RecipeTag, Tag)
+from ..fields import Base64ImageField
+from recipe.models import (
+    Cart, FavoritedRecipe, Ingredient, Recipe,
+    RecipeIngredient, Tag
+)
 
 User = get_user_model()
 
@@ -148,10 +150,7 @@ class WriteRecipeSerializer(ReadRecipeSerialzier):
         source='recipeingredient_set', many=True)
 
     def create_tags_ingredients(self, tags, ingredients, recipe):
-        # tags_obj = []
         ingredients_obj = []
-        # for tag in tags:
-        #     tags_obj.append(RecipeTag(tag=tag, recipe=recipe))
         ingredients = sorted(ingredients, key=lambda i: i['id'].name)
         for ingredient in ingredients:
             current_ingredient = ingredient['id']
@@ -196,7 +195,6 @@ class WriteRecipeSerializer(ReadRecipeSerialzier):
         instance.text = validated_data.get('text')
         instance.cooking_time = validated_data.get('cooking_time')
         instance.ingredients.clear()
-        # instance.tags.clear()
         self.create_tags_ingredients(tags, ingredients, instance)
         instance.save()
         return instance

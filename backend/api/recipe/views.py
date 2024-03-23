@@ -5,9 +5,9 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 
-from core.views import standart_action_DELETE, standart_action_POST
+from recipe.models import Cart, FavoritedRecipe, Ingredient, Recipe, Tag
+from ..views import standart_action_DELETE, standart_action_POST
 from .filters import RecipeFilter
-from .models import Cart, FavoritedRecipe, Ingredient, Recipe, Tag
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (CartSerializer, FavoritedRecipeSerializer,
                           IngredientSerializer, ReadRecipeSerialzier,
@@ -66,11 +66,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
             string += f"{name} ({value['unit']}) — {value['amount']}\n"
         return HttpResponse(string, content_type='application/txt')
 
-    def standart_POST_action(self, request, pk, serializer_class, model):
+    def standart_POST_action(self, request, pk, serializer_class):
         request.data['recipe'] = pk
         request.data['user'] = request.user.id
         return standart_action_POST(
             request, serializer_class)
+    # мне не понятно как тогда поступать с subscribe
+    # разве что делать через classmethod, вроде по ООП, но как-то не знаю
 
     def standart_DELETE_action(self, request, pk, model):
         request.data['recipe'] = pk
@@ -82,13 +84,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
             permission_classes=[IsAuthenticated])
     def favorite(self, request, pk):
         return self.standart_POST_action(
-            request, pk, FavoritedRecipeSerializer, FavoritedRecipe)
+            request, pk, FavoritedRecipeSerializer)
 
     @action(detail=True, methods=['POST'],
             permission_classes=[IsAuthenticated])
     def shopping_cart(self, request, pk):
         return self.standart_POST_action(
-            request, pk, CartSerializer, Cart)
+            request, pk, CartSerializer)
 
     @favorite.mapping.delete
     def delete_favorite(self, request, pk):
