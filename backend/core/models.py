@@ -11,7 +11,7 @@ class MyUser(AbstractUser):
     USERNAME_FIELD = 'email'
 
     class Meta:
-        constrains = [
+        constraints = [
             CheckConstraint(
                 check=~Q(username='me'),
                 name='username_cannot_be_me'
