@@ -29,7 +29,7 @@ class RecipeFilter(django_filters.FilterSet):
             return queryset.filter(
                 favorited__user=user)
         return queryset
-    
+
 
 class IngredientFilter(filters.SearchFilter):
     search_param = "name"

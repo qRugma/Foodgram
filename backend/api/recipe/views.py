@@ -28,6 +28,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = (IngredientFilter,)
     search_fields = ('^name',)
 
+
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     filter_backends = (DjangoFilterBackend,)
@@ -64,7 +65,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 }
         string = ''
         for name, value in strings.items():
-            # â€” у меня это длинное тире
             string += f"{name} ({value['unit']}) — {value['amount']}\n"
         response = HttpResponse(string, content_type='text/txt')
         # оно работает, но фронтенд переопределяет имя файла
@@ -77,8 +77,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         request.data['user'] = request.user.id
         return standart_action_POST(
             request, serializer_class)
-    # мне не понятно как тогда поступать с subscribe
-    # разве что делать через classmethod, вроде по ООП, но как-то не знаю
 
     def standart_DELETE_action(self, request, pk, model):
         get_object_or_404(Recipe, pk=pk)

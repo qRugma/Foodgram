@@ -48,8 +48,6 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
         model = RecipeIngredient
 
 
-# стоит ли вообще создавать этот класс?
-# по мне было легче и понятней прошлый вариант с одиим классом
 class WriteRecipeIngredientSerializer(RecipeIngredientSerializer):
     class Meta:
         fields = ('id', 'amount')

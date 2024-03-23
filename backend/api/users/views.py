@@ -25,7 +25,6 @@ class SubscriptionsViewSet(viewsets.ReadOnlyModelViewSet):
 @permission_classes([IsAuthenticated])
 @api_view(['DELETE', 'POST'])
 def subscribe(request, follow_id):
-    print('asd')
     request.data['follower'] = request.user.id
     request.data['user'] = follow_id
     try:
