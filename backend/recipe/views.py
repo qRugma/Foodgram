@@ -70,13 +70,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
         request.data['recipe'] = pk
         request.data['user'] = request.user.id
         return standart_action_POST(
-            request, serializer_class, model)
+            request, serializer_class)
 
-    def standart_DELETE_action(self, request, pk, serializer_class, model):
+    def standart_DELETE_action(self, request, pk, model):
         request.data['recipe'] = pk
         request.data['user'] = request.user.id
         return standart_action_DELETE(
-            request, serializer_class, model)
+            request, model)
 
     @action(detail=True, methods=['POST'],
             permission_classes=[IsAuthenticated])
@@ -93,9 +93,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @favorite.mapping.delete
     def delete_favorite(self, request, pk):
         return self.standart_DELETE_action(
-            request, pk, FavoritedRecipeSerializer, FavoritedRecipe)
+            request, pk, FavoritedRecipe)
 
     @shopping_cart.mapping.delete
     def delete_shopping_cart(self, request, pk):
         return self.standart_DELETE_action(
-            request, pk, CartSerializer, Cart)
+            request, pk, Cart)

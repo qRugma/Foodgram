@@ -34,7 +34,12 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
     name = serializers.CharField(source='ingredient.name', read_only=True)
     measurement_unit = serializers.CharField(
         source='ingredient.measurement_unit', read_only=True)
-    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
+    id = serializers.PrimaryKeyRelatedField(
+        queryset=Ingredient.objects.all(),
+        error_messages={
+            'does_not_exist': 'Ингредиент с id "{pk_value}" не существует',
+        }
+    )
 
     class Meta:
         fields = ('id', 'name', 'measurement_unit', 'amount')
@@ -143,18 +148,17 @@ class WriteRecipeSerializer(ReadRecipeSerialzier):
         source='recipeingredient_set', many=True)
 
     def create_tags_ingredients(self, tags, ingredients, recipe):
-        tags_obj = []
+        # tags_obj = []
         ingredients_obj = []
-        for tag in tags:
-            tags_obj.append(RecipeTag(tag=tag, recipe=recipe))
-        print(ingredients)
+        # for tag in tags:
+        #     tags_obj.append(RecipeTag(tag=tag, recipe=recipe))
         ingredients = sorted(ingredients, key=lambda i: i['id'].name)
         for ingredient in ingredients:
             current_ingredient = ingredient['id']
             amount = ingredient['amount']
             ingredients_obj.append(RecipeIngredient(
                 ingredient=current_ingredient, recipe=recipe, amount=amount))
-        RecipeTag.objects.bulk_create(tags_obj)
+        recipe.tags.set(tags, clear=True)
         RecipeIngredient.objects.bulk_create(ingredients_obj)
 
     def validate(self, data):
@@ -167,8 +171,8 @@ class WriteRecipeSerializer(ReadRecipeSerialzier):
         return data
 
     def validate_ingredients(self, value):
-        c = [i['id'] for i in value]
-        if len(set(c)) < len(c):
+        ids = [i['id'] for i in value]
+        if len(set(ids)) < len(ids):
             raise serializers.ValidationError("only unique ingredients")
         return value
 
@@ -192,7 +196,7 @@ class WriteRecipeSerializer(ReadRecipeSerialzier):
         instance.text = validated_data.get('text')
         instance.cooking_time = validated_data.get('cooking_time')
         instance.ingredients.clear()
-        instance.tags.clear()
+        # instance.tags.clear()
         self.create_tags_ingredients(tags, ingredients, instance)
         instance.save()
         return instance

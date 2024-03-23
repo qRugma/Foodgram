@@ -12,7 +12,7 @@ from .serializers import FollowSerializer
 User = get_user_model()
 
 
-def standart_action_POST(request, serializer_class, model_class):
+def standart_action_POST(request, serializer_class):
     serializer = serializer_class(
         data=request.data, context={'request': request})
     if serializer.is_valid():
@@ -21,7 +21,7 @@ def standart_action_POST(request, serializer_class, model_class):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-def standart_action_DELETE(request, serializer_class, model_class):
+def standart_action_DELETE(request, model_class):
     obj = get_object_or_404(model_class, **request.data)
     obj.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
@@ -42,7 +42,7 @@ def subscribe(request, follow_id):
     request.data['user'] = follow_id
     if request.method == 'POST':
         return standart_action_POST(
-            request, FollowSerializer, Follow)
+            request, FollowSerializer)
     elif request.method == 'DELETE':
         return standart_action_DELETE(
-            request, FollowSerializer, Follow)
+            request, Follow)
