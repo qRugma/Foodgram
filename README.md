@@ -17,7 +17,7 @@ docker compose -f docker-compose.production.yml exec backend python manage.py lo
 ```
 docker compose -f docker-compose.production.yml exec backend python manage.py createsuperuser
 ```
-
+Нужен python 3.10
 Для запуска сервера разработки:
 ```
 cd backend
