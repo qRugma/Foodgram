@@ -23,6 +23,7 @@ docker compose -f docker-compose.production.yml exec backend python manage.py cr
 cd backend
 python -m venv env
 . env/bin/activate
+pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver
 ```
